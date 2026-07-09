@@ -77,7 +77,6 @@ export function useChat() {
           backendSessionIdsRef.current[s.id] = s.id;
         });
 
-        setSessions(mapped);
         setSessionsError(null);
 
         const storedId = localStorage.getItem(ACTIVE_SESSION_STORAGE_KEY);
@@ -86,7 +85,28 @@ export function useChat() {
             ? storedId
             : mapped[0]?.id ?? null;
 
-        setActiveSessionId(initialId);
+        if (initialId) {
+          // Normal case: at least one session exists (from the backend or
+          // a still-valid stored id), so just use it.
+          setSessions(mapped);
+          setActiveSessionId(initialId);
+        } else {
+          // GET /history returned no sessions at all (e.g. brand-new
+          // deployment/database). Without this, activeSessionId stays
+          // null forever, sendMessage() bails out on its `if (!sessionId)
+          // return;` guard, and the app looks completely dead: the typed
+          // message is cleared by InputBox regardless, but nothing is
+          // ever sent - no session, no request, no reply. Seed a local
+          // session (same shape createNewSession() produces) so there's
+          // always something to send into; POST /session is still called
+          // lazily on first send, same as any other local session.
+          const id = `s${Date.now()}`;
+          const localSession = { id, title: "New chat", topic: null };
+          loadedMessagesRef.current.add(id);
+          setSessions([localSession, ...mapped]);
+          setMessagesBySession((prev) => ({ ...prev, [id]: [] }));
+          setActiveSessionId(id);
+        }
       } catch (err) {
         console.error("Failed to load sessions:", err);
         if (!cancelled) setSessionsError(err.message || "Failed to load sessions.");
