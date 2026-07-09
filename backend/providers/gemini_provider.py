@@ -26,6 +26,7 @@ PERFORMANCE NOTES (unchanged from the original gemini_client.py):
   model object) rather than re-concatenated into every message.
 """
 
+import os
 import threading
 
 import google.generativeai as genai
@@ -50,10 +51,18 @@ class GeminiProvider:
     # Configuration / model caching (Gemini-specific)
     # ------------------------------------------------------------------
 
+    def _resolve_api_key(self):
+        """Resolve the API key, preferring the GEMINI_API_KEY environment
+        variable (used for Render/server deployments where no
+        ~/.tutor_gojo/config.json exists) and falling back to the existing
+        config.get_api_key() behavior for local desktop usage.
+        """
+        return os.getenv("GEMINI_API_KEY") or get_api_key()
+
     def _current_cache_key(self):
         """Settings that, if changed, require a new model object."""
         return (
-            get_api_key(),
+            self._resolve_api_key(),
             get_setting("model", "gemini-2.5-flash"),
             get_setting("level", "beginner"),
             get_setting("teaching_intensity", "patient"),
@@ -61,7 +70,7 @@ class GeminiProvider:
 
     def configure(self):
         """Set up the Gemini API with the user's key."""
-        api_key = get_api_key()
+        api_key = self._resolve_api_key()
         if not api_key:
             raise ValueError("No API key configured. Please run the setup wizard first.")
         genai.configure(api_key=api_key)
