@@ -130,7 +130,19 @@ export function useChat() {
           timestamp: m.timestamp ?? m.created_at ?? null,
         }));
 
-        setMessagesBySession((prev) => ({ ...prev, [activeSessionId]: mapped }));
+        // Merge rather than overwrite: if the user sent a message while this
+        // fetch was in flight (e.g. slow cold-start response), that
+        // optimistically-appended message won't be in `mapped` yet (it
+        // isn't persisted on the backend). Overwriting outright would
+        // silently discard it. Fetched history ids are backend ids and
+        // never collide with locally-generated `u-...`/`a-...` ids, so
+        // any local-only entries are simply kept after the fetched ones.
+        setMessagesBySession((prev) => {
+          const local = prev[activeSessionId] ?? [];
+          const fetchedIds = new Set(mapped.map((m) => m.id));
+          const localOnly = local.filter((m) => !fetchedIds.has(m.id));
+          return { ...prev, [activeSessionId]: [...mapped, ...localOnly] };
+        });
         settled = true;
       } catch (err) {
         console.error("Failed to load messages:", err);
