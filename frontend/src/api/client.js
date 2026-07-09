@@ -11,7 +11,7 @@
  * streamChat() below.
  */
 
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://tutor-gojo.onrender.com";
 
 async function handleJson(res) {
   if (!res.ok) {
