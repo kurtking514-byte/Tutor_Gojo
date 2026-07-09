@@ -1,64 +1,100 @@
-# Tutor Gojo 🎯
+# Tutor Gojo
 
-Your personal AI coding mentor, powered by Google Gemini.
+Tutor Gojo is an AI tutoring application for learning to code. It pairs a **React + Vite** frontend with a **FastAPI** backend, uses **Google Gemini** as its primary LLM (with automatic failover to other providers), keeps a long-term **Markdown/Obsidian-style memory vault** of the student's progress, stores chat sessions in **SQLite**, and streams every reply to the browser in real time over **Server-Sent Events (SSE)**.
 
 ## Features
-- 💬 **Smart Chat** - Ask anything about coding and technology
-- 📚 **Teaching Mode** - Gojo explains step-by-step, checks your understanding
-- 📝 **Code Review** - Upload files for instant feedback
-- 📋 **Copy Code** - One-click copy on all code blocks
-- 🎨 **Anime Theme** - Dark purple aesthetic inspired by Satoru Gojo
-- 💾 **Persistent History** - Your conversations are saved locally
-- ⚙️ **Customizable** - Adjust teaching style and preferences
 
-## Setup
+Only features that currently exist in the codebase are listed here.
 
-### 1. Get a Gemini API Key
-1. Go to [Google AI Studio](https://aistudio.google.com)
-2. Create an API key (it's free)
-3. Copy the key
-
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Run the App
-```bash
-python main.py
-```
-
-On first launch, you'll enter your API key and name. That's it!
-
-## Building the Executable
-
-To create a standalone `.exe` for Windows:
-
-```bash
-pip install pyinstaller
-python build.py
-```
-
-The executable will be in `dist/TutorGojo.exe`.
+- **AI tutoring chat** — a persona-driven coding mentor powered by Google Gemini
+- **Streaming responses** — assistant replies stream to the UI chunk-by-chunk over SSE
+- **Persistent chat history** — sessions and messages are stored in SQLite and reloaded on return visits
+- **Long-term memory** — tracks student profile, topic mastery, strengths, misconceptions, coding-style traits, mistake patterns, journal entries, projects, assessments, and more across sessions
+- **Markdown memory vault** — the memory system is backed by Markdown notes with YAML frontmatter (an Obsidian-style vault) rather than opaque database rows
+- **Lesson recommendations** — a "what to learn next" recommendation derived from the student's memory profile
+- **Learning dashboard** — an in-app view of progress, stats, and recommendations
+- **Provider failover** — if Gemini fails, requests automatically retry against OpenRouter/Groq, with per-provider health tracking and cooldowns
+- **Anonymous browser-based sessions** — no login required; a per-browser id (stored in `localStorage`) scopes each visitor's sessions and history so users only ever see their own chats
+- **Mobile responsive UI** — a usable chat experience on phones, including a collapsible sidebar, scrollable code blocks, and a keyboard-friendly input bar
 
 ## Project Structure
+
 ```
-tutor_gojo/
-├── main.py              # Main application
-├── config.py            # Settings & API key management
-├── database.py          # SQLite chat history & progress
-├── gemini_client.py     # Gemini AI wrapper
-├── requirements.txt     # Python dependencies
-├── build.py            # PyInstaller build script
-├── assets/             # Images and resources
-└── data/               # Additional data files
+backend/
+frontend/
 ```
+
+- **`backend/`** — the FastAPI application. Contains the API entrypoint (`api.py`), the SQLite chat/session layer (`database.py`), the multi-provider LLM router with failover (`llm_router.py`, `providers/`, `router/`), the Markdown/Obsidian-backed long-term memory system (`memory_engine/`, `obsidian_backend.py`), business logic services (`services/` — chat, history, memory, lesson recommendations), tutor persona/prompt content (`prompts/`), and an early-stage orchestration layer (`orchestrator/`).
+- **`frontend/`** — the React + Vite single-page app. Contains UI components (`src/components/` — chat window, message bubbles, code blocks, sidebar, settings, learning dashboard), the chat state hook (`src/hooks/UseChat.jsx`), the backend API client (`src/api/client.js`), and global styles (`src/styles/`).
 
 ## Tech Stack
-- **UI**: CustomTkinter (modern, dark-themed widgets)
-- **AI**: Google Gemini API
-- **Database**: SQLite (local, no server needed)
-- **Packaging**: PyInstaller
 
----
-*"You're getting stronger, student." - Gojo*
+**Frontend:**
+- React
+- Vite
+
+**Backend:**
+- FastAPI
+- SQLite
+- Google Gemini API
+
+**Memory:**
+- Markdown Vault (Obsidian-style notes with YAML frontmatter)
+
+**Deployment:**
+- Render
+
+## Installation (Local)
+
+### Backend
+
+```
+cd backend
+pip install -r requirements.txt
+python -m uvicorn api:app --reload
+```
+
+### Frontend
+
+```
+cd frontend
+npm install
+npm run dev
+```
+
+## Deployment
+
+**Backend:** Render Web Service, running the FastAPI app via `uvicorn`.
+
+**Frontend:** Render Static Site, serving the Vite production build.
+
+Required environment variables:
+
+```
+GEMINI_API_KEY
+```
+
+## Screenshots
+
+(Add screenshots here)
+
+## Roadmap
+
+- User authentication
+- File upload support
+- Multiple Gemini API key rotation
+- Better mobile UI
+- Better chat titles
+- Export conversations
+
+## License
+
+MIT
+
+## Contributing
+
+Contributions are welcome. Please open an issue to discuss any significant change before submitting a pull request, keep pull requests focused on a single change, and make sure the app still runs locally (both backend and frontend) before submitting.
+
+## Author
+
+Your Name Here
