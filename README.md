@@ -1,100 +1,131 @@
 # Tutor Gojo
 
-Tutor Gojo is an AI tutoring application for learning to code. It pairs a **React + Vite** frontend with a **FastAPI** backend, uses **Google Gemini** as its primary LLM (with automatic failover to other providers), keeps a long-term **Markdown/Obsidian-style memory vault** of the student's progress, stores chat sessions in **SQLite**, and streams every reply to the browser in real time over **Server-Sent Events (SSE)**.
+Tutor Gojo is an AI-powered programming tutor that helps you learn to code through interactive, streaming conversations. It's built with a React + Vite frontend and a FastAPI backend, powered by the Google Gemini API, with chat history stored in SQLite and long-term learning progress stored as Markdown-based memory.
+
+---
 
 ## Features
 
-Only features that currently exist in the codebase are listed here.
+- **AI tutoring chat** — ask programming questions and get clear, guided explanations
+- **Real-time streaming responses** — answers stream in via Server-Sent Events (SSE) as they're generated
+- **Persistent chat history** — conversations are saved and can be revisited
+- **Learning memory** — Tutor Gojo remembers your previous learning progress across sessions
+- **Markdown-based memory storage** — learning memory is stored in a simple, human-readable Markdown format
+- **Anonymous browser-based sessions** — no login required; each browser only sees its own chat history
+- **Mobile-responsive interface** — usable on both desktop and mobile
+- **Google Gemini integration** — powered by Google's Gemini API
+- **Learning Dashboard** — view a summary of your learning progress
+- **Lesson Recommendations** — get suggested next topics based on your progress
 
-- **AI tutoring chat** — a persona-driven coding mentor powered by Google Gemini
-- **Streaming responses** — assistant replies stream to the UI chunk-by-chunk over SSE
-- **Persistent chat history** — sessions and messages are stored in SQLite and reloaded on return visits
-- **Long-term memory** — tracks student profile, topic mastery, strengths, misconceptions, coding-style traits, mistake patterns, journal entries, projects, assessments, and more across sessions
-- **Markdown memory vault** — the memory system is backed by Markdown notes with YAML frontmatter (an Obsidian-style vault) rather than opaque database rows
-- **Lesson recommendations** — a "what to learn next" recommendation derived from the student's memory profile
-- **Learning dashboard** — an in-app view of progress, stats, and recommendations
-- **Provider failover** — if Gemini fails, requests automatically retry against OpenRouter/Groq, with per-provider health tracking and cooldowns
-- **Anonymous browser-based sessions** — no login required; a per-browser id (stored in `localStorage`) scopes each visitor's sessions and history so users only ever see their own chats
-- **Mobile responsive UI** — a usable chat experience on phones, including a collapsible sidebar, scrollable code blocks, and a keyboard-friendly input bar
+---
 
 ## Project Structure
 
 ```
 backend/
+  - FastAPI API
+  - Database
+  - AI chat services
+  - Memory system
+
 frontend/
+  - React UI
+  - Chat interface
+  - Sidebar
+  - Dashboard
+  - API client
 ```
 
-- **`backend/`** — the FastAPI application. Contains the API entrypoint (`api.py`), the SQLite chat/session layer (`database.py`), the multi-provider LLM router with failover (`llm_router.py`, `providers/`, `router/`), the Markdown/Obsidian-backed long-term memory system (`memory_engine/`, `obsidian_backend.py`), business logic services (`services/` — chat, history, memory, lesson recommendations), tutor persona/prompt content (`prompts/`), and an early-stage orchestration layer (`orchestrator/`).
-- **`frontend/`** — the React + Vite single-page app. Contains UI components (`src/components/` — chat window, message bubbles, code blocks, sidebar, settings, learning dashboard), the chat state hook (`src/hooks/UseChat.jsx`), the backend API client (`src/api/client.js`), and global styles (`src/styles/`).
+---
 
 ## Tech Stack
 
-**Frontend:**
+**Frontend**
 - React
 - Vite
 
-**Backend:**
+**Backend**
 - FastAPI
 - SQLite
 - Google Gemini API
 
-**Memory:**
-- Markdown Vault (Obsidian-style notes with YAML frontmatter)
+**Memory**
+- Markdown-based storage
 
-**Deployment:**
+**Deployment**
 - Render
 
-## Installation (Local)
+---
 
-### Backend
+## Local Installation
 
-```
+**Backend**
+```bash
 cd backend
 pip install -r requirements.txt
 python -m uvicorn api:app --reload
 ```
 
-### Frontend
-
-```
+**Frontend**
+```bash
 cd frontend
 npm install
 npm run dev
 ```
 
+---
+
 ## Deployment
 
-**Backend:** Render Web Service, running the FastAPI app via `uvicorn`.
+- **Backend:** Render Web Service
+- **Frontend:** Render Static Site
 
-**Frontend:** Render Static Site, serving the Vite production build.
-
-Required environment variables:
-
+**Required environment variable:**
 ```
 GEMINI_API_KEY
 ```
 
+---
+
 ## Screenshots
 
-(Add screenshots here)
+_Coming soon._
+
+---
 
 ## Roadmap
 
+Planned for future releases:
+
 - User authentication
-- File upload support
+- File uploads (PDF, code, documents)
+- Automatic chat titles
 - Multiple Gemini API key rotation
-- Better mobile UI
-- Better chat titles
-- Export conversations
+- Conversation export
+- Better personalization
+- Additional AI providers (future)
+
+---
 
 ## License
 
 MIT
 
+---
+
 ## Contributing
 
-Contributions are welcome. Please open an issue to discuss any significant change before submitting a pull request, keep pull requests focused on a single change, and make sure the app still runs locally (both backend and frontend) before submitting.
+Contributions are welcome! To contribute:
+
+1. Fork the repository
+2. Create a new branch for your change
+3. Make your changes and test locally
+4. Submit a pull request with a clear description of what you changed and why
+
+For larger changes, please open an issue first to discuss what you'd like to change.
+
+---
 
 ## Author
 
-Your Name Here
+Author: (Your Name)
